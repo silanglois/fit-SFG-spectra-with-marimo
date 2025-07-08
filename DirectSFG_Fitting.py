@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.14.7"
+__generated_with = "0.14.10"
 app = marimo.App(width="medium")
 
 
@@ -352,14 +352,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo, plt):
     cmap1 = mo.ui.dropdown(options=plt.colormaps(), value='viridis', searchable=True, label='Colormap:')
-    dpi1 = mo.ui.number(label='figure dpi:', value=100, step=50, start=50, stop=600)
+    dpi1 = mo.ui.number(label='figure dpi:', value=125, step=25, start=50, stop=600)
     mo.md(f'For each plot, you can pick the colormap used to color your different lines.\n\n Try it! &#x2192; {cmap1}\n\n **Note:** The colormaps available come from the [matplotlib library](https://matplotlib.org/stable/users/explain/colors/colormaps.html).')
     return cmap1, dpi1
 
 
 @app.cell(hide_code=True)
 def _(cmap1, datafiles, dpi1, mo, np, plt):
-    _fig, _ax = plt.subplots(figsize=(10.6, 5.2), dpi=dpi1.value)
+    _fig, _ax = plt.subplots(figsize=(8.4, 4.5), dpi=dpi1.value)
     _colors = [plt.get_cmap(cmap1.value)(i) for i in np.linspace(0.05, 0.95, len(datafiles))]
     for _file, _color in zip(datafiles, _colors):
         _file.data.plot('Wavenumber', 'Intensity', label=_file.label, ax=_ax, color=_color)
@@ -408,7 +408,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo, plt):
     cmap2 = mo.ui.dropdown(options=plt.colormaps(), value='viridis', searchable=True, label='[Colormap](https://matplotlib.org/stable/users/explain/colors/colormaps.html):')
-    dpi2 = mo.ui.number(label='figure dpi:', value=100, step=50, start=50, stop=600)
+    dpi2 = mo.ui.number(label='figure dpi:', value=125, step=25, start=50, stop=600)
     cmap2
     return cmap2, dpi2
 
@@ -417,7 +417,7 @@ def _(mo, plt):
 def _(WMax, WMin, cmap2, datafiles, dpi2, mo, np, plt):
     _ = WMin + WMax #this line serves no purpose other than having this cell be re-run if selected range is modified
 
-    _fig, _ax = plt.subplots(figsize=(10.6, 5.2), dpi=dpi2.value)
+    _fig, _ax = plt.subplots(figsize=(8.4, 4.5), dpi=dpi2.value)
     _colors = [plt.get_cmap(cmap2.value)(i) for i in np.linspace(0.05, 0.95, len(datafiles))]
     for _file, _color in zip(datafiles, _colors):
         _file.filtered_data.plot('Wavenumber', 'Intensity', label=_file.label, ax=_ax, color=_color)
@@ -658,7 +658,7 @@ def _(datafiles, mo, plt):
     display_re1 = mo.ui.checkbox(label=r'Display Re$(\chi^{(2)}_\text{eff})$ (dotted lines)', value=False)
     cmap3 = mo.ui.dropdown(options=plt.colormaps(), value='viridis', searchable=True, label='[Colormap](https://matplotlib.org/stable/users/explain/colors/colormaps.html):')
 
-    dpi3 = mo.ui.number(label='figure dpi:', value=100, step=50, start=50, stop=600)
+    dpi3 = mo.ui.number(label='figure dpi:', value=125, step=25, start=50, stop=600)
 
     mo.vstack([
         mo.md('## Plot fit results'),
@@ -693,7 +693,7 @@ def _(
     np,
     plt,
 ):
-    _fig = plt.figure(figsize=(10.6, 5.2), dpi=dpi3.value)
+    _fig = plt.figure(figsize=(8.4, 4.5), dpi=dpi3.value)
 
     if display_residuals1.value:
         _gs = GridSpec(nrows=2, ncols=1, height_ratios=[3, 1], hspace=0.05)
@@ -743,11 +743,11 @@ def _(datafiles, mo, plt):
     display_residuals2 = mo.ui.checkbox(label='Display residuals', value=False)
     display_im2 = mo.ui.checkbox(label=r'Display Im$(\chi^{(2)}_\text{eff})$', value=True)
     display_re2 = mo.ui.checkbox(label=r'Display Re$(\chi^{(2)}_\text{eff})$', value=True)
-    display_phase = mo.ui.checkbox(label='Display phase', value=False)
+    display_phase = mo.ui.checkbox(label=r'Display $\chi^{(2)}$ phase', value=False)
     display_resonants = mo.ui.checkbox(label='Display individual resonant features', value=False)
     cmap4 = mo.ui.dropdown(options=plt.colormaps(), value='viridis', searchable=True, label='[Colormap](https://matplotlib.org/stable/users/explain/colors/colormaps.html):')
 
-    dpi4 = mo.ui.number(label='figure dpi:', value=100, step=50, start=50, stop=600)
+    dpi4 = mo.ui.number(label='figure dpi:', value=125, step=25, start=50, stop=600)
 
     mo.vstack([
         mo.md('## Focus on a single datafile'),
@@ -790,7 +790,7 @@ def _(
     num_res,
     plt,
 ):
-    _fig = plt.figure(figsize=(10.6, 5.2), dpi=dpi4.value)
+    _fig = plt.figure(figsize=(8.4, 4.5), dpi=dpi4.value)
 
     if display_residuals2.value:
         _gs = GridSpec(nrows=2, ncols=1, height_ratios=[3, 1], hspace=0.05)
