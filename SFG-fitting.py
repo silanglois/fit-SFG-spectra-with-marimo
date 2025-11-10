@@ -1,19 +1,20 @@
 import marimo
 
-__generated_with = "0.14.13"
+__generated_with = "0.17.5"
 app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""# Fitting SFG Curves with Multiple Resonant Peaks""")
+    mo.md(r"""
+    # Fitting SFG Curves with Multiple Resonant Peaks
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     Using the iminuit package, select a window of SFG spectra and perform a non-linear fit of nonresonant and a variable number ($N^{res}$) of resonant peaks according to the equation
 
     \[
@@ -23,20 +24,17 @@ def _(mo):
     where the parameters that we want to determine are the nonresonant amplitue ($A_\text{NR}$) and phase ($\phi$), as well as the amplitude, position, and width (damping constant) of each resonant peak ($A^{res}_j$, $\omega^{res}_j$, and $\Gamma_j$, respectively).
 
     This script was developed by Simon L.J. Langlois and the Cyran Lab. The fitting algorithm used here was originally posted on [Github](https://github.com/BoiseState-Chem/SFG_Fit.git).
-    """
-    )
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        r"""
+    mo.md(r"""
     ## Prepare our script
 
     Import needed modules and build the required functions and objects
-    """
-    )
+    """)
     return
 
 
@@ -200,7 +198,10 @@ def deffile(datetime, dtime, os, pd, re):
         Args:
             delimiter: delimiter for the data in the file
         """
-            self.data = pd.read_csv(self.directory, delimiter=delimiter, index_col=False)
+            try:
+                self.data = pd.read_csv(self.directory, delimiter=delimiter, index_col=False)
+            except Exception as e:
+                self.data = pd.read_csv(self.directory, delimiter=delimiter, index_col=False, skiprows=7)
 
         def extract_date(self) -> None:
             """
@@ -232,7 +233,6 @@ def deffile(datetime, dtime, os, pd, re):
             if None not in parts:
                 self.label = ' '.join(parts)
 
-
     return (File,)
 
 
@@ -259,14 +259,15 @@ def _(datetime, os, shutil):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Load Data""")
+    mo.md(r"""
+    ## Load Data
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(
-        """
+    mo.md("""
     /// attention | Warning
 
     The datafiles you import have to be of type .csv and have columns labeled "Wavenumber" (corresponding to the mid-IR wavenumber) and "Intensity" (containing the corresponding the vSFG intensity). There can be other columns, but they will be ignored.
@@ -300,12 +301,11 @@ def _(mo):
     **Note:** The date at which the spectra was acquired is extracted with the requirement that the path to the file is as follow: "some path/yyyy_mm_dd/some path/file.csv"
 
     ///
-    """
-    )
+    """)
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     file_browser = mo.ui.file_browser(
         initial_path="C:/Users/simonlanglois/Desktop/simon/Data/",
@@ -320,12 +320,13 @@ def _(mo):
 def _(mo):
     _options = ['sample', 'concentration', 'condition', 'condition2', 'polarization', 'region', 'acq_time', 'date', 'time']
     _value = ['sample', 'concentration', 'condition', 'condition2', 'date', 'time']
-    file_label = mo.ui.multiselect(options=_options, value=_value, label='File label include:')
-    return (file_label,)
+    file_label = mo.ui.multiselect(options=_options, value=_value, label='file label include:')
+    label_as_name = mo.ui.checkbox(value=False, label='Use filename as label')
+    return file_label, label_as_name
 
 
 @app.cell(hide_code=True)
-def _(File, file_browser, file_label, mo):
+def _(File, file_browser, file_label, label_as_name, mo):
     datafiles = []
 
     _paths = [str(file.path) for file in file_browser.value]
@@ -336,16 +337,19 @@ def _(File, file_browser, file_label, mo):
         _file.extract_data()
         _file.extract_info()
         _file.extract_date()
-        _file.build_label(*file_label.value)
+        if not label_as_name.value:
+            _file.build_label(*file_label.value)
         datafiles.append(_file)
 
-    mo.md(f'{file_label}\n\n For example, the label for **{datafiles[0].filename}** would be **{datafiles[0].label}**')
+    mo.md(f'{label_as_name}\n\n or {file_label}\n\n For example, the label for **{datafiles[0].filename}** would be **{datafiles[0].label}**')
     return (datafiles,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Plot data""")
+    mo.md(r"""
+    ## Plot data
+    """)
     return
 
 
@@ -370,7 +374,9 @@ def _(cmap1, datafiles, dpi1, mo, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Filter your data""")
+    mo.md(r"""
+    ## Filter your data
+    """)
     return
 
 
@@ -401,7 +407,9 @@ def _(datafiles, max_wn, min_wn):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Display filtered data""")
+    mo.md(r"""
+    ### Display filtered data
+    """)
     return
 
 
@@ -428,7 +436,9 @@ def _(WMax, WMin, cmap2, datafiles, dpi2, mo, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Perform the fit""")
+    mo.md(r"""
+    ## Perform the fit
+    """)
     return
 
 
@@ -512,8 +522,7 @@ def _(mo, num_res, parameters):
 
 @app.cell(hide_code=True)
 def _(mo, parameters):
-    mo.md(
-        rf"""
+    mo.md(rf"""
     *For troubleshooting* - **values** = {parameters.value['values']}
 
     <!-- **fixed** {parameters.value['fixs']}
@@ -521,8 +530,7 @@ def _(mo, parameters):
     **mins** {parameters.value['mins']}
 
     **maxs** {parameters.value['maxs']} -->
-    """
-    )
+    """)
     return
 
 
@@ -627,7 +635,9 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Fit results""")
+    mo.md(r"""
+    ## Fit results
+    """)
     return
 
 
@@ -878,7 +888,9 @@ def _(
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Saving the resulting fits""")
+    mo.md(r"""
+    ## Saving the resulting fits
+    """)
     return
 
 
